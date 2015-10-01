@@ -1,0 +1,137 @@
+---
+title: "HW4"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#1a. create a vector of the integers from 1 to 20
+
+1:20
+
+#1b. create a vector of the integers from 20 to 1
+
+20:1
+
+#1c. create a vector that counts from 1-20 and then back down
+
+c(1:20,19:1) 
+
+#1d. create the vector (4,6,3) and assign it to tmp
+
+tmp <- c(4,6,3) #assigns vector to variable
+
+#1e. repeat the vector (4,6,3) 10 times
+
+rep(tmp,10) #repeat the variable tmp 10 times
+
+#1f.repeat the vector (4,6,3) where there are 11 occurrences of 4, 10 occurrences of 6 and 10 occurrences of 3
+
+rep(tmp,l=31) #repeat the variable temp until the 31st element is reached, then stop
+
+#1g. repeat the vector (4,6,3) until where there are 10 occurrences of 4,20 occurrences of 6 and 30 occurrences of 3.
+
+rep(tmp,times=c(10,20,30)) #repeat the first element in the vector tmp 10 times, the second element in the vector tmp 20 times, and the third element in the vector tmp 30 times.
+
+#2. create a vector of values of e^(x)* cos(x) at x=3.1,3.2,...6
+
+tmp <- seq(3,6,by=0.1)  #assign the variable tmp as a sequence from on the interval 3-6 with a step size of .1
+
+exp(tmp)*cos(tmp) #e^(x) * cos(x) for every x in tmp
+
+#3a. create the vector (0.1^3 *0.2^1,0.1^6*0.2^4,0.1^9*0.2^7,...,0.1^36*0.2^34)
+
+(0.1^seq(3,36,by=3))*(0.2^seq(1,34,by=3)) # creates a vector that consists of .1 raised to every power in the sequence 3-36 with step size 3, then multiply each of those elements by .2 raised to each power in the sequence 1-34 with step size 3 to produce a vector of 12 elements.
+
+#3b. create a vector of the number two raised to the power of each number in the sequence 1-25 divided by the that number in the sequence.
+
+(2^(1:25))/(1:25) #creates a vector where each element is the number 2 raised to the power of each number in the sequence 1-25 with step size 1, divided by that number in the sequence.
+
+#4a. calculate the sum of the function (i^3 + 4i^2) from i=10 to i=100
+
+tmp <- 10:100 #create a vector of the numbers 10-100 with step size 1
+sum(tmp^3+4*tmp^2) #calculates the total sum of the function (i^3 + 4i^2) for every i in temp
+
+#4b. calculate the sum of the function ((2^i)/i) + (3^i)/(i^2)) as i goes from 1-25
+
+tmp <- 1:25 #create a vector of the numbers 1-25, these are the i's
+sum((2^tmp)/tmp + 3^tmp/(tmp^2)) #input each element of that vector into the function ((2^i)/i) + (3^i)/(i^2)) and sum up all of those elements
+
+#5a. Use the paste function to create the vector ("label 1","label 2"...."label 30")
+
+paste("label", 1:30) #paste function converts arguments ("label") and teh vector 1:30 to character strings and then concatenates them
+
+
+#5b.Use the paste function to create the vector ("fn1","fn2"..."fn30")
+
+paste("fn", 1:30,sep="") #converts arguments "fn" and the vector 1:30 to character strings and concatenates them, separating each value by the argument given in sep, in this case there is nothing separating them
+
+#6a. create the vector (y2-x1,...,yn-x(n-1))
+
+set.seed(50) #allows us to reuse the same set of random variables
+xVec <- sample(0:999, 250, replace=T) #generates random sample of 250 values on the interval 0-999 and stores them as an x vector 
+yVec <- sample(0:999, 250, replace=T) #generates random sample of 250 values on the interval 0-999 and stores them as a y vector
+
+yVec[-1] - xVec[-length(xVec)] #drops the first value in yVec. Drops the last value in xVec. Subtracts the two to produce the desired vector.
+
+#6b. Create the vector (sin(y1)/cos(x2),sin(y2)/cos(x3)),....)
+
+sin(yVec[-length(yVec)]) / cos(xVec[-1]) #computes sin of each value in Yvec for each value other than the last value (becuase it was chopped off), then divides this by the cosine of each value in the xVec except the first value(because it was chopped off)
+
+#6c. Create the vector (x1 + 2x2 -x3,..., x(n-2) + 2x(n-1) -xn)
+
+xVec[-c(249,250)] + 2*xVec[-c(1,250)]-xVec[-c(1,2)] #chops off last two values of xVec for x1 since we are only going up to x(n-2) for this term.  Then chops off first and last term of x2 since we are only going from x2- x(n-1).  And finally chops off first and second term of x3 since we are going from x3 to xn.
+
+
+#6d. calculate the sum of the function (e^(xi+1))/(xi+10) from i=1 to n-1
+
+sum(exp(-xVec[-1])/(xVec[-length(xVec)]+10)) #chops off last value of xVec for first term since we are starting at x2 .  Then the other expression chops off the last value in Xvec since we are only going up to n-1
+
+#7a. Pick out the values in yVec which are > 600
+
+yVec[yVec>600] #indexes into yVec and grabs all values in yVec greater than 600
+
+#7b.What are the index positions in yVec of the values which are > 600?
+
+which(yVec>600) #built in function "which" gives true index values for logical object, in this case that the values in yVec are > 600
+
+#7c. What are the values in xVec which correspond to the values in yVec which are > 600?
+
+xVec[yVec>600] #returns the values in Xvec which correspond to the index values given by the logical argument yVec>600
+
+#7d. Create the vector (abs(x1-xb)^.5, abs(x2-xb)^.5,...)
+
+sqrt(abs(xVec-mean(xVec))) #calculates the square root of the absolute value of the each term of xVec minus the mean of Xvec for each value in Xvec.
+
+#7e. How many values in Yvec are within 200 of the maximum value of the terms in yVec.
+
+count(yVec>(max(yVec)-200)) #counts the number of times our logical argument is true, in this case our argument checks whether each term in yVec is within 200 of the maximum value in Yvec
+
+#7f. How many numbers in xVec are divisible by 2?
+
+count(xVec%%2 == 0) #counts the number of times our argument (x/2 = 0) is true in xVec
+
+#7g. Sort the numbers in the vector xVec in order of increasing values in yVec
+
+xVec[order(yVec)] #order the xVec according to the order of yVec
+
+#7h. Pick out the elements of yVec at index positions 1,4,7,10...
+
+yVec[c(T,F,F)] #takes the index values of yVec three at a time, returning the first, but not the second or third, and so on. 
+
+
+#8. By using the cumprod or otherwise, calculate:
+
+1+sum(cumprod(seq(2,38,b=2)/seq(3,39,b=2))) #The expression inside cumprod will evaluate to be a sequence, let's call S. Then cumprod will loop over each term in S.  Each time it does this it will be creating a new term, let's call T, that is the cumulative product of T and all prior T's in S (and obviously 1). The sum function then adds up all of these T's.
+
+```
+
+You can also embed plots, for example:
+
+```
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
