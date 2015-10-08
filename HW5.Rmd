@@ -1,0 +1,204 @@
+---
+title: "HW5"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+
+#1. Extract all numeric columns
+nums <-sapply(diamonds, is.numeric) #sapply applies the function is.numeric to the data set diamonds which extracts all numeric columns and stores them to the variable nums
+
+diamonds[nums] #returns all numeric columns from diamonds
+
+
+#2. Create a data frame that contains each pair of variable names in the first column, and their corresponding pearson correlation coefficients in the second column
+
+v1 <- paste(colnames(diamonds[1]),colnames(diamonds[5]), sep = "-") #extracts first and fifth column names(carat and depth respectively) from diamonds, separating them with a "-" and storing them to variable v1 
+v2 <- paste(colnames(diamonds[1]),colnames(diamonds[6]), sep = "-") #extracts first and sixth column names from diamonds, separating them with a "-" and storing them to variable v2  
+v3 <- paste(colnames(diamonds[1]),colnames(diamonds[7]), sep = "-")
+v4 <- paste(colnames(diamonds[1]),colnames(diamonds[8]), sep = "-")
+v5 <- paste(colnames(diamonds[1]),colnames(diamonds[9]), sep = "-")
+v6 <- paste(colnames(diamonds[1]),colnames(diamonds[10]), sep = "-")
+v7 <- paste(colnames(diamonds[5]),colnames(diamonds[6]), sep = "-")
+v8 <- paste(colnames(diamonds[5]),colnames(diamonds[7]), sep = "-")
+v9 <- paste(colnames(diamonds[5]),colnames(diamonds[8]), sep = "-")
+v10 <- paste(colnames(diamonds[5]),colnames(diamonds[9]), sep = "-")
+v11 <- paste(colnames(diamonds[5]),colnames(diamonds[10]), sep = "-")
+v12 <- paste(colnames(diamonds[6]),colnames(diamonds[7]), sep = "-")
+v13 <- paste(colnames(diamonds[6]),colnames(diamonds[8]), sep = "-")
+v14 <- paste(colnames(diamonds[6]),colnames(diamonds[9]), sep = "-")
+v15 <- paste(colnames(diamonds[6]),colnames(diamonds[10]), sep = "-")
+v16 <- paste(colnames(diamonds[7]),colnames(diamonds[8]), sep = "-")
+v17 <- paste(colnames(diamonds[7]),colnames(diamonds[9]), sep = "-")
+v18 <- paste(colnames(diamonds[7]),colnames(diamonds[10]), sep = "-")
+v19 <- paste(colnames(diamonds[8]),colnames(diamonds[9]), sep = "-")
+v20 <- paste(colnames(diamonds[8]),colnames(diamonds[10]), sep = "-")
+v21 <- paste(colnames(diamonds[9]),colnames(diamonds[10]), sep = "-")
+
+
+col1 <- c(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21) #creates first column to be placed into our data frame, it is the collection of all pairs of numeric variables
+
+w1 <- cor(diamonds[[1]], diamonds[[5]]) #extracts the numeric vector data from columns 1 and 5 of diamonds and calculates the correlation coefficient (Pearson's by default)
+w2 <- cor(diamonds[[1]], diamonds[[6]]) 
+w3 <- cor(diamonds[[1]], diamonds[[7]])
+w4 <- cor(diamonds[[1]], diamonds[[8]])
+w5 <- cor(diamonds[[1]], diamonds[[9]])
+w6 <- cor(diamonds[[1]], diamonds[[10]])
+w7 <- cor(diamonds[[5]], diamonds[[6]])
+w8 <- cor(diamonds[[5]], diamonds[[7]])
+w9 <- cor(diamonds[[5]], diamonds[[8]])
+w10 <- cor(diamonds[[5]], diamonds[[9]])
+w11 <- cor(diamonds[[5]], diamonds[[10]])
+w12 <- cor(diamonds[[6]], diamonds[[7]])
+w13 <- cor(diamonds[[6]], diamonds[[8]])
+w14 <- cor(diamonds[[6]], diamonds[[9]])
+w15 <- cor(diamonds[[6]], diamonds[[10]])
+w16 <- cor(diamonds[[7]], diamonds[[8]])
+w17 <- cor(diamonds[[7]], diamonds[[9]])
+w18 <- cor(diamonds[[7]], diamonds[[10]])
+w19 <- cor(diamonds[[8]], diamonds[[9]])
+w20 <- cor(diamonds[[8]], diamonds[[10]])
+w21 <- cor(diamonds[[9]], diamonds[[10]])
+
+CorrelationCoeff <- c(w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,w11,w12,w13,w14,w15,w16,w17,w18,w19,w20,w21) #creates vector of all correlation coefficients for all pairs of numeric variables, this will be the second column in our data frame
+
+
+
+df <- data.frame(col1, CorrelationCoeff, stringsAsFactors = FALSE) #creates data frame where the first column is each pair of numeric variables and the second column is their corresponding correlation coefficient. stringsAsFactors = FALSE ensures that the names in our first column will remain characters and not ordinal factors
+
+
+#3. Create scatter plots for each pair of numeric variables
+
+
+carat_depth <- ggplot(diamonds, aes(x=carat,y=depth)) #creates variable named carat_depth that is a ggplot using the diamonds data set, where the x values take on the numerical vector of values for "carat" in the diamonds data, and the y values take on the numerical vector of values for "depth" from the diamonds data.
+carat_depth + labs(title=df[[1,2]]) + #add to the plot carat_depth a title which is the element in the first row and second column of our data frame df (which corresponds to the respective correlation coefficient for our variables)
+  theme(plot.title = element_text(size = rel(2), colour = "red")) + #appropriately size and color the title of the plot
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[5])) +  #creates the labels for our plot the x label will be the name of the first column in diamonds(carat), and the y label will be the name of the fifth column in diamonds(depth)
+  geom_point() #creates the scatter plot, this is where we can add aesthetics such as changing the size, shape, and color of the points in our plot
+
+carat_table <- ggplot(diamonds, aes(x=carat,y=table))
+carat_table + labs(title=df[[2,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[6])) + 
+  geom_point()
+
+carat_price <- ggplot(diamonds, aes(x=carat,y=price))
+carat_price + labs(title=df[[3,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[7])) + 
+  geom_point()
+
+carat_x <- ggplot(diamonds, aes(x=carat,y=x))
+carat_x + labs(title=df[[4,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[8])) + 
+  geom_point()
+
+carat_y <- ggplot(diamonds, aes(x=carat,y=y))
+carat_y + labs(title=df[[5,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[9])) + 
+  geom_point()
+
+carat_z <- ggplot(diamonds, aes(x=carat,y=z))
+carat_z + labs(title=df[[6,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "blue")) +
+  labs(x=colnames(diamonds[1]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+depth_table <- ggplot(diamonds, aes(x=depth,y=table))
+depth_table + labs(title=df[[7,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[5]), y=colnames(diamonds[6])) + 
+  geom_point()
+
+depth_table <- ggplot(diamonds, aes(x=depth,y=price))
+depth_table + labs(title=df[[8,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[5]), y=colnames(diamonds[7])) + 
+  geom_point()
+
+depth_x <- ggplot(diamonds, aes(x=depth,y=x))
+depth_x + labs(title=df[[9,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[5]), y=colnames(diamonds[8])) + 
+  geom_point()
+
+depth_y <- ggplot(diamonds, aes(x=depth,y=y))
+depth_y + labs(title=df[[10,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[5]), y=colnames(diamonds[9])) + 
+  geom_point()
+
+depth_z <- ggplot(diamonds, aes(x=depth,y=z))
+depth_z + labs(title=df[[11,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[5]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+table_price <- ggplot(diamonds, aes(x=table,y=price))
+table_price + labs(title=df[[12,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[6]), y=colnames(diamonds[7])) + 
+  geom_point()
+
+table_x <- ggplot(diamonds, aes(x=table,y=x))
+table_x + labs(title=df[[13,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[6]), y=colnames(diamonds[8])) + 
+  geom_point()
+
+table_y <- ggplot(diamonds, aes(x=table,y=y))
+table_y + labs(title=df[[14,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[6]), y=colnames(diamonds[9])) + 
+  geom_point()
+
+table_z <- ggplot(diamonds, aes(x=table,y=z))
+table_z + labs(title=df[[15,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[6]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+price_x <- ggplot(diamonds, aes(x=price,y=x))
+price_x + labs(title=df[[16,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[7]), y=colnames(diamonds[8])) + 
+  geom_point()
+
+price_y <- ggplot(diamonds, aes(x=price,y=y))
+price_y + labs(title=df[[17,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[7]), y=colnames(diamonds[9])) + 
+  geom_point()
+
+price_z <- ggplot(diamonds, aes(x=price,y=x))
+price_z + labs(title=df[[18,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[7]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+x_y <- ggplot(diamonds, aes(x=price,y=y))
+x_y + labs(title=df[[19,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[8]), y=colnames(diamonds[9])) + 
+  geom_point()
+
+x_z <- ggplot(diamonds, aes(x=price,y=z))
+x_z + labs(title=df[[20,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[8]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+y_z <- ggplot(diamonds, aes(x=y,y=z))
+y_z + labs(title=df[[21,2]]) +
+  theme(plot.title = element_text(size = rel(2), colour = "red")) +
+  labs(x=colnames(diamonds[9]), y=colnames(diamonds[10])) + 
+  geom_point()
+
+```
+
