@@ -1,0 +1,94 @@
+---
+title: "Test1_R"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+
+#1: Add a logical column to the diamonds data frame based on the ratio of 1's and 0's in the mtcars$vs variable.
+
+logic_True <- replicate(23599, TRUE) #create 23599 instances of the logical variable TRUE and store this to a variable called logic_True
+
+logic_False <- replicate(30341, FALSE) #create 30341 instances of the logical variable FALSE and store this to a variable called logic_False
+
+logic_vector <- c(logic_True, logic_False) #creates our logical vector to be added to the diamonds data frame, this vector consists of 23599 instances of TRUE and 30341 instances of FALSE
+
+str(logic_vector) #check structure to make sure this is what we want
+
+diamonds$ratio <- logic_vector #add our logical vector to the diamonds data, naming the new column "ratio"
+
+str(diamonds) #check to make sure our loigcal vector has been added
+
+
+#2: Generically extract all factor and logical variables so the method you develop can be used on any data frame.
+
+factors <-sapply(diamonds, is.factor) #sapply applies the function is.factor to the data set diamonds which extracts all factor columns and stores them to the variable factors
+
+factorcols <- diamonds[factors] #extracts all factor columns from diamonds and stores them to variable factorcols, creating a new data frame of just the factor variables in diamonds
+
+str(factorcols) #check structure to verify we have what we want
+
+logics <- sapply(diamonds, is.logical) #sapply applies the function is.logical to the data set diamonds which extracts all logical columns and stores them to the variable logics
+
+logicalcols <- diamonds[logics] #extracts all logical columns from diamonds and storest hem to variable logicalcols, creating a new data frame of just the logical variables in diamonds
+
+str(logicalcols) #check structure to make sure we have what we want
+
+
+#3: Plot a gray bar graph for every factor and logical variable.
+
+require(ggplot2) #install ggplot
+cut_diamonds <- (factorcols[1]) #extracts the first column from our data frame containing all factor variables in diamonds, and creates a new data frame of this one single factor
+
+b1 <- ggplot(cut_diamonds, aes(x= cut)) + #plots the factor 'cut', and labels the x-axis appropriately
+  geom_bar(fill = 'gray') #specifies that we want a bar chart where the bars are colored gray
+
+b1 #generates the plot
+
+color_diamonds <- (factorcols[2])#extracts the second column from our data frame containing all factor variables in diamonds, and creates a new data frame of this one single factor
+
+plot(color_diamonds$color) #generates simple bar chart without using ggplot
+
+clarity_diamonds <- (factorcols[3]) #extracts the third column from our data frame containing all factor variables in diamonds, and creates a new data frame of this one single factor
+
+b2 <- ggplot(clarity_diamonds, aes(x = clarity)) + #plots the factor 'clarity', and labels the x-axis appropriately
+  geom_bar(fill = 'gray') #specifies that we want a bar chart where the bars are colored gray
+
+b2 #generates the plot
+
+ratio_diamonds <-(logicalcols[1]) #extracts the first column from our data frame containing all logical variables in diamonds, and creates a new data frame of this one single logical variable
+str(ratio_diamonds)
+
+b3 <- ggplot(ratio_diamonds, aes(x= ratio)) + #plots the logical variable 'ratio', and labels the x-axis appropriately
+  geom_bar(fill= 'gray') #specifies bar graph with gray colored bars
+
+b3  #generates the plot
+
+#4: Create a list of frequency tables that contains one table for each of the categorical and logical variables.
+
+require(plyr) #install package that will allow us to count the frequency of specified variables in a dataframe
+
+f1 <- count(diamonds,'cut') #returns frequency table of the values in the "cut" column from diamonds data frame and stores this to variable f1
+
+f2 <- count(diamonds,'color') #returns frequency table of "color" from diamonds data frame and stores this to variable f2
+
+f3 <- count(diamonds, 'clarity') #returns frequency table of "clarity" from diamonds data frame and stores this to variable f3
+
+f4 <- count(diamonds, 'ratio')#returns frequency table of "ratio" from diamonds data frame and stores this to variable f4
+
+frequency_tables <- c(f1,f2,f3,f4) #creates a list of all desired frequency tables and stores this list to variable 'frequency_tables'
+
+frequency_tables #check to make sure we have a list of 4 frequency tables
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
