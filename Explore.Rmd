@@ -1,0 +1,154 @@
+---
+title: "Explore"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+require(grid)
+require(ggplot2)
+require(plyr)
+data(diamonds)
+diamonds <- within(diamonds, 'LogEq' <- as.logical(rep(c("True", "False"),c(23599,30341))))
+str(diamonds)
+
+explore <- function(df, bin_sizes, corr_thr) 
+{
+  #extract numeric variables from data frame
+  df_numerics <- df[which(lapply(diamonds, is.numeric) == TRUE)] 
+  
+  #extract factor variables from data frame
+  df_factors <- df[which(lapply(diamonds, is.factor) == TRUE)] 
+  
+  #extract logical variables from data frame
+  df_logicals <- df[which(lapply(diamonds, is.logical) == TRUE)] 
+  
+  #loop through all numeric variables
+  for (i in 1:length(df_numerics))
+  {
+    #loop through all bin sizes
+    for (bins in 1:length(bin_sizes))
+    {
+      #Calculate bin size
+      bin_num <- (max(df_numerics[[i]])-min(df_numerics[[i]]))/bin_sizes[bins]
+      
+      #Calculate the mean and label
+      col_mean <- mean(df_numerics[[i]])
+      mean_Label = sprintf("%8.2f ", col_mean)
+      
+      #Plot regular count histogram, create a ggplot for each numeric variable
+      explore <- ggplot(df_numerics, aes(x=df_numerics[[i]]),
+                         environment = environment()) #tell R to look at local scope
+      
+      #Make the ggplot a histogram
+      explore <- explore +
+        geom_histogram(colour = 'blue',
+                       fill = 'blue',
+                       binwidth=bin_num) +
+        labs(x=names(df_numerics)[[i]]) +
+        geom_vline(xintercept=col_mean, colour='red') +
+        annotate("text",x=col_mean,y=0,label=mean_Label,hjust=0)
+      print(explore) #display each graph in our loop of all numeric variables
+      
+      #Add a density plot
+      print(explore + aes(y=..density..) + labs(y="Density"))
+    }
+  }
+  #loop through all logical variables
+  for ( j in 1:length(df_logicals))
+    {
+      #create a ggplot for each logical variable, where that variable is on the x axis
+      explore <- ggplot(df_logicals, aes(x=df_logicals[[j]]), 
+                         environment = environment())
+                         
+      #Make the ggplots gray bargraphs
+      explore <- explore + 
+        geom_bar(fill="gray", colour="gray") +           
+        labs(x=names(df_logicals)[j])
+        print(explore) 
+      }
+      
+    #loop through all factor variables
+  for ( p in 1:length(df_factors))
+    {
+      #create a ggplot for each logical variable, where that variable is on the x axis
+      explore <- ggplot(df_factors, aes(x=df_factors[[p]]), 
+                         environment = environment())
+                         
+      #Make the ggplots gray bargraphs
+      explore <- explore + 
+        geom_bar(fill="gray", colour="gray") +           
+        labs(x=names(df_factors)[p])
+        print(explore) 
+      }
+  #Create an empty list to be populated with r^2 values of numeric variable pairs    
+  r_squared_list <- list()
+  #The following two loops will loop through every combination of numeric variables
+  for(m in 1:(length(df_numerics)-1))
+  {
+      for(k in 2:length(df_numerics))
+      {
+          r_squared_value <- cor(df_numerics[m] ,df_numerics[k])^2
+          r_squared_list <- append(r_squared_list, r_squared_value)
+          print(r_squared_list)
+        }
+    }
+  
+  my_list <- list()
+  #Loop through each logical variable to create frequency table
+  for(z in 1:length(df_logicals))
+  {
+      freq_table <- table(df_logicals[z])
+      my_list <- append(my_list, freq_table)
+    }
+  #loop through each factor variable to create a frequency table
+  for (q in 1:length(df_factors))
+  {
+      freq_table2 <- table(df_factors[q])
+      #Append each frequency table to our list
+      my_list <- append(my_list, freq_table2)
+    }
+    
+  #loop through each numeric variable to create summary statistics for each  
+  for (r in 1:length(df_numerics))
+  {
+       #Append each summar table to our list
+       my_list <- append(my_list, summary(df_numerics[r]))
+    }
+  my_df <- data.frame()
+  corr_list <- list()
+  #loop through each pair of numeric variables  
+  for (w in 1:(length(df_numerics)-1))
+  {
+      for(b in 2:length(df_numerics))
+      {
+        #loop through each numeric variable pair and grab each columns name,  
+        #concatenating them with a - in between
+        pair_name <- paste(names(df_numerics[w]), names(df_numerics[b]), sep = "-")
+        
+        #add these variable-pair names to our empty list list
+        corr_list <- append(corr_list, pair_name)
+        }
+  }
+  #Combine list of numeric variable pair names with the r squared value for each pair
+  r_squared_df <- data.frame(rbind(corr_list, r_squared_list))
+  
+  #Add this list of r squared values to our list
+  my_list <- append(my_list, r_squared_df)
+  print(my_list)
+}
+  
+explore(diamonds, c(5,20,50), .25)  
+explore(mtcars, c(5,20,50), .25)  
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
