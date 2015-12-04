@@ -1,0 +1,298 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+require(ggplot2)
+library(plyr)
+abalone <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data", header = FALSE)
+str(abalone)
+names(abalone) <- c("sex", "length", "diameter", "height", "weight.whole", "weight.shucked", "weight.viscera", "weight.shell", "rings")
+str(abalone)
+
+#1.
+#Take samples of sizes 1%, 10%, 25%, 50%, 80%, 100%
+smpl1 <- abalone[sample(nrow(abalone), 42),]
+smpl10 <- abalone[sample(nrow(abalone), 418),]
+smpl25 <- abalone[sample(nrow(abalone), 1044),]
+smpl50 <- abalone[sample(nrow(abalone), 2089),]
+smpl80 <- abalone[sample(nrow(abalone), 3342),]
+smpl100 <- abalone[sample(nrow(abalone), 4177),]
+
+#Calculate the min, max, mean, and variance of the whole weight column for each sample
+
+
+#Calculate min at each sample size
+min1 <- min(smpl1[5])
+min10 <- min(smpl10[5])
+min25 <- min(smpl25[5])
+min50 <- min(smpl50[5])
+min80 <- min(smpl80[5])
+min100 <- min(smpl100[5])
+
+mins <- c(min1, min10, min25, min50, min80, min100)
+
+#Calculate max at each sample size
+max1 <- max(smpl1[5])
+max10 <- max(smpl10[5])
+max25 <- max(smpl25[5])
+max50 <- max(smpl50[5])
+max80 <- max(smpl80[5])
+max100 <- max(smpl100[5])
+
+maxs <- c(max1, max10, max25, max50, max80, max100)
+
+
+#Calculate mean at each sample size
+data1 <- smpl1$weight.whole
+mean1 <- mean(data1)
+
+data10 <- smpl10$weight.whole
+mean10 <- mean(data10)
+
+data25 <- smpl25$weight.whole
+mean25 <- mean(data25)
+
+data50 <- smpl50$weight.whole
+mean50 <- mean(data50)
+
+data80 <- smpl80$weight.whole
+mean80 <- mean(data80)
+
+data100 <- smpl100$weight.whole
+mean100 <- mean(data100)
+
+
+means <- c(mean1, mean10, mean25, mean50, mean80, mean100)
+
+#Calculate variance at each sample size
+
+var1 <- var(data1)
+
+var10 <- var(data10)
+
+var25 <- var(data25)
+
+var50 <- var(data50)
+
+var80 <- var(data80)
+
+var100 <- var(data100)
+
+vars <- c(var1, var10, var25, var50, var80, var100)
+
+#Group data from sample sizes together
+
+data1p <- c(min1, max1, mean1, var1)
+
+data10p <- c(min10, max10, mean10, var10)
+
+data25p <- c(min25, max25, mean25, var25)
+
+data50p <- c(min50, max50, mean50, var50)
+
+data80p <- c(min80, max80, mean80, var80)
+
+data100p <- c(min100, max100, mean100, var100)
+
+
+#Create data frame
+
+mydf1 <- data.frame(data1p, data10p, data25p, data50p, data80p, data100p, row.names = c("Sample Min", "Sample Max", "Sample Mean", "Sample Variance"))
+mydf1 <- rename(mydf1, c("data1p"= "1% Sample", "data10p" = "10% Sample", "data25p"= "25% Sample", "data50p"= "50% Sample", "data80p"= "80% Sample", "data100p"= "100% Sample"))
+
+#Make sure output is what we want
+mydf1
+
+
+#2. Create a grid of histograms that contains all sample sizes
+
+#First we create histograms of each sample size
+hist1 <- hist(smpl1$weight.whole, main = paste("Histogram of 1% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist10 <- hist(smpl10$weight.whole, main = paste("Histogram of 10% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist25 <- hist(smpl25$weight.whole, main = paste("Histogram of 25% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist50 <- hist(smpl50$weight.whole, main = paste("Histogram of 50% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist80 <- hist(smpl80$weight.whole, main = paste("Histogram of 80% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist100 <- hist(smpl100$weight.whole, main = paste("Histogram of 100% Sample"), xlab = "Weight", ylab = "Frequency")
+
+
+#Arrange the histograms we created into a grid using par function
+par(mfrow=c(2,3))
+plot(hist1, main = paste("Histogram of 1% Sample"), xlab = "Weight", ylab = "Frequency" )
+plot(hist10, main = paste("Histogram of 10% Sample"), xlab = "Weight", ylab = "Frequency" )
+plot(hist25, main = paste("Histogram of 25% Sample"), xlab = "Weight", ylab = "Frequency")
+plot(hist50, main = paste("Histogram of 50% Sample"), xlab = "Weight", ylab = "Frequency")
+plot(hist80, main = paste("Histogram of 80% Sample"), xlab = "Weight", ylab = "Frequency")
+plot(hist100,  main = paste("Histogram of 100% Sample"), xlab = "Weight", ylab = "Frequency")
+
+
+
+#3 Take 1,000 samples at each of the sample sizes in 1 above (except the 100% sample!). Calculate a mean at each iteration and store the results in a dataframe.
+
+#first we need to create empty vectors with places for 1000 values
+smpl1v= c(rep(0, times=1000))
+smpl10v= c(rep(0, times=1000))
+smpl25v= c(rep(0, times=1000))
+smpl50v= c(rep(0, times=1000))
+smpl80v= c(rep(0, times=1000))
+
+
+#Takes 1000 samples at each sample size 
+for (i in 1:1000){
+randomSample = function(dataframe,n,replacement) {     
+  return (dataframe[sample(nrow(dataframe), n, replace=replacement),]) }
+  smpl1k <- randomSample(abalone, 42, FALSE)
+  smpl10k <- randomSample(abalone, 418, FALSE)
+  smpl25k <- randomSample(abalone, 1044, FALSE)
+  smpl50k <- randomSample(abalone, 2089, FALSE)
+  smpl80k <- randomSample(abalone, 3342, FALSE)
+
+smpl1mean= mean(smpl1k[,5])
+smpl1v[i]=smpl1mean
+
+smpl10mean= mean(smpl10k[,5])
+smpl10v[i]= smpl10mean
+
+smpl25mean= mean(smpl25k[,5])
+smpl25v[i]= smpl25mean
+
+smpl50mean= mean(smpl50k[,5])
+smpl50v[i]= smpl50mean
+
+smpl80mean= mean(smpl80k[,5])
+smpl80v[i]= smpl80mean
+
+}
+
+mydf= data.frame(cbind(smpl1v, smpl10v, smpl25v, smpl50v, smpl80v))
+
+#renaming the columns in the new data frame
+colnames(mydf) <- c("1% Sample", "10% Sample", "25% Sample", "50% Sample", "80% Sample")
+
+#Make sure dataframe looks as it should
+mydf
+
+
+#4. Create another grid of histograms that contains the four columns just created and include the 100% sample from 1.
+
+#First we will again create the histograms individually
+
+hist1a <- hist(smpl1v, main = paste("Histogram of 1000 1% Samples"), xlab = "Weight", ylab = "Frequency")
+
+hist10a <- hist(smpl10v, main = paste("Histogram of 1000 10% Samples"), xlab = "Weight", ylab = "Frequency")
+
+hist25a <- hist(smpl25v, main = paste("Histogram of 1000 25% Samples"), xlab = "Weight", ylab = "Frequency")
+
+hist50a <- hist(smpl50v, main = paste("Histogram of 1000 50% Samples"), xlab = "Weight", ylab = "Frequency")
+
+hist80a <- hist(smpl80v, main = paste("Histogram of 1000 80% Samples"), xlab = "Weight", ylab = "Frequency")
+
+hist100a <- hist(smpl100$weight.whole, main = paste("Histogram of 100% Sample"), xlab = "Weight", ylab = "Frequency")
+
+
+#Now we arrange the histograms into a grid using the par function
+
+par(mfrow=c(2,3))
+plot(hist1a, main = paste("Histogram of 1000 1% Samples"), xlab = "Weight", ylab = "Frequency")
+plot(hist10a, main = paste("Histogram of 1000 10% Samples"), xlab = "Weight", ylab = "Frequency")
+plot(hist25a, main = paste("Histogram of 1000 25% Samples"), xlab = "Weight", ylab = "Frequency")
+plot(hist50a, main = paste("Histogram of 1000 50% Samples"), xlab = "Weight", ylab = "Frequency")
+plot(hist80a, main = paste("Histogram of 1000 80% Samples"), xlab = "Weight", ylab = "Frequency")
+plot(hist100a, main = paste("Histogram of 100% Sample"), xlab = "Weight", ylab = "Frequency")
+
+
+#5. Calculate the min, max, mean and variance of each column from 3 and of the total dataset (the 100% sample). Append to the dataframe created in 1. Name the mean row ResampleMean and the others appropriately.
+
+smpl1b <- min(mydf[1])
+smpl10b <- min(mydf[2])
+smpl25b <- min(mydf[3])
+smpl50b <- min(mydf[4])
+smpl80b <- min(mydf[5])
+smpl100b <-min(abalone$weight.whole)
+
+smpl1c <- max(mydf[1])
+smpl10c <- max(mydf[2])
+smpl25c <- max(mydf[3])
+smpl50c <- max(mydf[4])
+smpl80c <- max(mydf[5])
+smpl100c <-max(abalone$weight.whole)
+
+smpl1d <- mean(smpl1v)
+smpl10d <- mean(smpl10v)
+smpl25d <- mean(smpl25v)
+smpl50d <- mean(smpl50v)
+smpl80d <- mean(smpl80v)
+smpl100d <-mean(abalone$weight.whole)
+
+smpl1e <- var(mydf[1])
+smpl10e <- var(mydf[2])
+smpl25e <- var(mydf[3])
+smpl50e <- var(mydf[4])
+smpl80e <- var(mydf[5])
+smpl100e <-var(abalone$weight.whole)
+
+
+data1q <- c(smpl1b, smpl1c, smpl1d, smpl1e)
+data10q <- c(smpl10b, smpl10c, smpl10d, smpl10e)
+data25q <- c(smpl25b, smpl25c, smpl25d, smpl25e)
+data50q <- c(smpl50b, smpl50c, smpl50d, smpl50e)
+data80q <- c(smpl80b, smpl80c, smpl80d, smpl80e)
+data100q <- c(smpl100b, smpl100c, smpl100d, smpl100e)
+
+
+mydf2 <- data.frame(data1q, data10q, data25q, data50q, data80q, data100q, row.names = c("Resample Min", "Resample Max", "Resample Mean", "Resample Variance"))
+
+mydf2 <- rename(mydf2, c("data1q"= "1% Sample", "data10q" = "10% Sample", "data25q"= "25% Sample", "data50q"= "50% Sample", "data80q"= "80% Sample", "data100q"= "100% Sample"))
+
+
+mydf3 <- rbind(mydf1, mydf2)
+
+#Make sure data-frame looks as it should
+mydf3
+
+
+#6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
+
+abalonehist <- hist(abalone$weight.whole,main = paste("Histogram of Abalone Weight"), xlab = "Weight", ylab = "Frequency")
+abalonehist <- abalonehist + abline(v= mean1,col="blue")
+abalonehist <- abalonehist + abline(v= mean10, col= "red")
+abalonehist <- abalonehist + abline(v= mean25, col= "black")
+abalonehist <- abalonehist + abline(v= mean50, col= "yellow")
+abalonehist <- abalonehist + abline(v= mean80, col= "brown")
+
+
+
+#7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
+smpl1d
+abalonehist <- hist(abalone$weight.whole,main = paste("Histogram of Abalone Weight"), xlab = "Weight", ylab = "Frequency")
+abalonehist <- abalonehist + abline(v= smpl1d,col="blue")
+abalonehist <- abalonehist + abline(v= smpl10d, col= "red")
+abalonehist <- abalonehist + abline(v= smpl25d, col= "black")
+abalonehist <- abalonehist + abline(v= smpl50d, col= "yellow")
+abalonehist <- abalonehist + abline(v= smpl80d, col= "brown")
+
+
+#9.Provide a brief explanation of what you observe in the measures and histograms as it relates to sample size and resampling.
+
+#As we sample over 1000 iterations, the measures (min, max,mean,variance) as well as the shape of the histograms approach the measures and histograms of samples of 100% of the data.  This makes intuitive sense. If we were to take 1 sample of 1% of the data, the variance associated this would be quite high and our measure would be unreliable. However, as we approach a large number of iterations, this decreases the "luck" factor(i.e. the variance) that we get an unrepresentative sample, and our measures on those samples converge to that of the entire data set.
+
+
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
