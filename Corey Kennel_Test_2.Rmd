@@ -11,11 +11,11 @@ When you click the **Knit** button a document will be generated that includes bo
 require(ggplot2)
 library(plyr)
 abalone <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data", header = FALSE)
-str(abalone)
 names(abalone) <- c("sex", "length", "diameter", "height", "weight.whole", "weight.shucked", "weight.viscera", "weight.shell", "rings")
 str(abalone)
 
-#1.
+#1.Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data. Calculate the min, max, mean and variance.
+
 #Take samples of sizes 1%, 10%, 25%, 50%, 80%, 100%
 smpl1 <- abalone[sample(nrow(abalone), 42),]
 smpl10 <- abalone[sample(nrow(abalone), 418),]
@@ -263,24 +263,737 @@ mydf3
 
 #6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
 
-abalonehist <- hist(abalone$weight.whole,main = paste("Histogram of Abalone Weight"), xlab = "Weight", ylab = "Frequency")
-abalonehist <- abalonehist + abline(v= mean1,col="blue")
-abalonehist <- abalonehist + abline(v= mean10, col= "red")
-abalonehist <- abalonehist + abline(v= mean25, col= "black")
-abalonehist <- abalonehist + abline(v= mean50, col= "yellow")
-abalonehist <- abalonehist + abline(v= mean80, col= "brown")
 
+#create labels for the vertical lines we want
+mean_label1 = sprintf("SampleMean1perc", mean1)
+mean_label10 = sprintf("SampleMean10perc", mean10)
+mean_label25 = sprintf("SampleMean25perc", mean25)
+mean_label50 = sprintf("SampleMean50perc", mean50)
+mean_label80 = sprintf("SampleMean80perc", mean80)
+
+#Create the histogram
+abalonehist <- ggplot(abalone, aes(x=abalone$weight.whole),
+                         environment = environment())
+      abalonehist <- abalonehist +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="weight") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=mean1, colour='red') +
+        annotate("text",x=mean1,y=0,label=mean_label1,hjust=.95)
+      
+    #add vertical line for 10%sample to histogram  
+    abalonehist <- abalonehist + geom_vline(xintercept=mean10,  colour='yellow') +
+        annotate("text",x=mean10,y=0,label=mean_label10,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     abalonehist <- abalonehist + geom_vline(xintercept=mean10,  colour='blue') +
+        annotate("text",x=mean25,y=0,label=mean_label25,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     abalonehist <- abalonehist + geom_vline(xintercept=mean50,  colour='black') +
+        annotate("text",x=mean50,y=0,label=mean_label50,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     abalonehist <- abalonehist + geom_vline(xintercept=mean80,  colour='green') +
+        annotate("text",x=mean80,y=0,label=mean_label80,vjust=-4, hjust=0)
+      print(abalonehist)
+     
+##Sample sizes 10%, 25%, and 50% were all within .01 of one another so the colors overlap.
 
 
 #7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
-smpl1d
-abalonehist <- hist(abalone$weight.whole,main = paste("Histogram of Abalone Weight"), xlab = "Weight", ylab = "Frequency")
-abalonehist <- abalonehist + abline(v= smpl1d,col="blue")
-abalonehist <- abalonehist + abline(v= smpl10d, col= "red")
-abalonehist <- abalonehist + abline(v= smpl25d, col= "black")
-abalonehist <- abalonehist + abline(v= smpl50d, col= "yellow")
-abalonehist <- abalonehist + abline(v= smpl80d, col= "brown")
 
+#create labels for the vertical lines we want
+mean_label1r = sprintf("ResampleMean1perc", smpl1d)
+mean_label10r = sprintf("ResampleMean10perc", smpl10d)
+mean_label25r = sprintf("ResampleMean25perc", smpl25d)
+mean_label50r = sprintf("ResampleMean50perc", smpl50d)
+mean_label80r = sprintf("ResampleMean80perc", smpl80d)
+
+abalonehist1 <- ggplot(abalone, aes(x=abalone$weight.whole),
+                         environment = environment())
+      abalonehist1 <- abalonehist1 +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="weight") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=smpl1d, colour='red') +
+        annotate("text",x=smpl1d,y=0,label=mean_label1r,hjust=-.05)
+      
+    #add vertical line for 10%sample to histogram  
+    abalonehist1 <- abalonehist1 + geom_vline(xintercept=smpl10d,  colour='yellow') +
+        annotate("text",x=smpl1d,y=0,label=mean_label10r,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     abalonehist1 <- abalonehist1 + geom_vline(xintercept=smpl25d,  colour='blue') +
+        annotate("text",x=smpl25d,y=0,label=mean_label25r,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     abalonehist1 <- abalonehist1 + geom_vline(xintercept=smpl50d,  colour='black') +
+        annotate("text",x=smpl50d,y=0,label=mean_label50r,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     abalonehist1 <- abalonehist1 + geom_vline(xintercept=smpl80d,  colour='green') +
+        annotate("text",x=smpl80d,y=0,label=mean_label80r,vjust=-4, hjust=-.05)
+      print(abalonehist1)
+      
+#8 Now execute your code on diamonds$carat and faithful$eruptions.
+
+#First we execute our code on diamonds$carat
+str(diamonds)
+#1. Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data. Calculate the min, max, mean and variance
+
+#Take samples of sizes 1%, 10%, 25%, 50%, 80%, 100%
+smpl1 <- diamonds[sample(nrow(diamonds), 539),]
+smpl10 <- diamonds[sample(nrow(diamonds), 5394),]
+smpl25 <- diamonds[sample(nrow(diamonds), 13485),]
+smpl50 <- diamonds[sample(nrow(diamonds), 26970),]
+smpl80 <- diamonds[sample(nrow(diamonds), 43152),]
+smpl100 <- diamonds[sample(nrow(diamonds), 53940),]
+
+#Calculate the min, max, mean, and variance of the carat column for each sample
+
+#Calculate min at each sample size
+min1 <- min(smpl1[1])
+min10 <- min(smpl10[1])
+min25 <- min(smpl25[1])
+min50 <- min(smpl50[1])
+min80 <- min(smpl80[1])
+min100 <- min(smpl100[1])
+
+mins <- c(min1, min10, min25, min50, min80, min100)
+
+#Calculate max at each sample size
+max1 <- max(smpl1[1])
+max10 <- max(smpl10[1])
+max25 <- max(smpl25[1])
+max50 <- max(smpl50[1])
+max80 <- max(smpl80[1])
+max100 <- max(smpl100[1])
+
+maxs <- c(max1, max10, max25, max50, max80, max100)
+
+
+#Calculate mean at each sample size
+data1 <- smpl1$carat
+mean1 <- mean(data1)
+
+data10 <- smpl10$carat
+mean10 <- mean(data10)
+
+data25 <- smpl25$carat
+mean25 <- mean(data25)
+
+data50 <- smpl50$carat
+mean50 <- mean(data50)
+
+data80 <- smpl80$carat
+mean80 <- mean(data80)
+
+data100 <- smpl100$carat
+mean100 <- mean(data100)
+
+
+means <- c(mean1, mean10, mean25, mean50, mean80, mean100)
+
+#Calculate variance at each sample size
+
+var1 <- var(data1)
+
+var10 <- var(data10)
+
+var25 <- var(data25)
+
+var50 <- var(data50)
+
+var80 <- var(data80)
+
+var100 <- var(data100)
+
+vars <- c(var1, var10, var25, var50, var80, var100)
+
+#Group data from sample sizes together
+
+data1p <- c(min1, max1, mean1, var1)
+
+data10p <- c(min10, max10, mean10, var10)
+
+data25p <- c(min25, max25, mean25, var25)
+
+data50p <- c(min50, max50, mean50, var50)
+
+data80p <- c(min80, max80, mean80, var80)
+
+data100p <- c(min100, max100, mean100, var100)
+
+
+#Create data frame
+
+mydf1 <- data.frame(data1p, data10p, data25p, data50p, data80p, data100p, row.names = c("Sample Min", "Sample Max", "Sample Mean", "Sample Variance"))
+mydf1 <- rename(mydf1, c("data1p"= "1% Sample", "data10p" = "10% Sample", "data25p"= "25% Sample", "data50p"= "50% Sample", "data80p"= "80% Sample", "data100p"= "100% Sample"))
+
+#Make sure output is what we want
+mydf1
+
+
+#2. Create a grid of histograms that contains all sample sizes
+
+#First we create histograms of each sample size
+hist1 <- hist(smpl1$carat, main = paste("Histogram of 1% Sample"), xlab = "Carat", ylab = "Frequency")
+
+hist10 <- hist(smpl10$carat, main = paste("Histogram of 10% Sample"), xlab = "Carat", ylab = "Frequency")
+
+hist25 <- hist(smpl25$carat, main = paste("Histogram of 25% Sample"), xlab = "Carat", ylab = "Frequency")
+
+hist50 <- hist(smpl50$carat, main = paste("Histogram of 50% Sample"), xlab = "Carat", ylab = "Frequency")
+
+hist80 <- hist(smpl80$carat, main = paste("Histogram of 80% Sample"), xlab = "Carat", ylab = "Frequency")
+
+hist100 <- hist(smpl100$carat, main = paste("Histogram of 100% Sample"), xlab = "Carat", ylab = "Frequency")
+
+
+#Arrange the histograms we created into a grid using par function
+par(mfrow=c(2,3))
+plot(hist1, main = paste("Histogram of 1% Sample"), xlab = "Carat", ylab = "Frequency" )
+plot(hist10, main = paste("Histogram of 10% Sample"), xlab = "Carat", ylab = "Frequency" )
+plot(hist25, main = paste("Histogram of 25% Sample"), xlab = "Carat", ylab = "Frequency")
+plot(hist50, main = paste("Histogram of 50% Sample"), xlab = "Carat", ylab = "Frequency")
+plot(hist80, main = paste("Histogram of 80% Sample"), xlab = "Carat", ylab = "Frequency")
+plot(hist100,  main = paste("Histogram of 100% Sample"), xlab = "Carat", ylab = "Frequency")
+
+
+
+#3 Take 1,000 samples at each of the sample sizes in 1 above (except the 100% sample!). Calculate a mean at each iteration and store the results in a dataframe.
+
+#first we need to create empty vectors with places for 1000 values
+smpl1v= c(rep(0, times=1000))
+smpl10v= c(rep(0, times=1000))
+smpl25v= c(rep(0, times=1000))
+smpl50v= c(rep(0, times=1000))
+smpl80v= c(rep(0, times=1000))
+
+
+#Takes 1000 samples at each sample size 
+for (i in 1:1000){
+randomSample = function(dataframe,n,replacement) {     
+  return (dataframe[sample(nrow(dataframe), n, replace=replacement),]) }
+  smpl1k <- randomSample(diamonds, 42, FALSE)
+  smpl10k <- randomSample(diamonds, 418, FALSE)
+  smpl25k <- randomSample(diamonds, 1044, FALSE)
+  smpl50k <- randomSample(diamonds, 2089, FALSE)
+  smpl80k <- randomSample(diamonds, 3342, FALSE)
+
+smpl1mean= mean(smpl1k[,1])
+smpl1v[i]=smpl1mean
+
+smpl10mean= mean(smpl10k[,1])
+smpl10v[i]= smpl10mean
+
+smpl25mean= mean(smpl25k[,1])
+smpl25v[i]= smpl25mean
+
+smpl50mean= mean(smpl50k[,1])
+smpl50v[i]= smpl50mean
+
+smpl80mean= mean(smpl80k[,1])
+smpl80v[i]= smpl80mean
+
+}
+
+mydf= data.frame(cbind(smpl1v, smpl10v, smpl25v, smpl50v, smpl80v))
+
+#renaming the columns in the new data frame
+colnames(mydf) <- c("1% Sample", "10% Sample", "25% Sample", "50% Sample", "80% Sample")
+
+#Make sure dataframe looks as it should
+mydf
+
+
+#4. Create another grid of histograms that contains the four columns just created and include the 100% sample from 1.
+
+#First we will again create the histograms individually
+
+hist1a <- hist(smpl1v, main = paste("Histogram of 1000 1% Samples"), xlab = "Carat", ylab = "Frequency")
+
+hist10a <- hist(smpl10v, main = paste("Histogram of 1000 10% Samples"), xlab = "Carat", ylab = "Frequency")
+
+hist25a <- hist(smpl25v, main = paste("Histogram of 1000 25% Samples"), xlab = "Carat", ylab = "Frequency")
+
+hist50a <- hist(smpl50v, main = paste("Histogram of 1000 50% Samples"), xlab = "Carat", ylab = "Frequency")
+
+hist80a <- hist(smpl80v, main = paste("Histogram of 1000 80% Samples"), xlab = "Carat", ylab = "Frequency")
+
+hist100a <- hist(smpl100$carat, main = paste("Histogram of 100% Sample"), xlab = "Carat", ylab = "Frequency")
+
+
+#Now we arrange the histograms into a grid using the par function
+
+par(mfrow=c(2,3))
+plot(hist1a, main = paste("Histogram of 1000 1% Samples"), xlab = "Carat", ylab = "Frequency")
+plot(hist10a, main = paste("Histogram of 1000 10% Samples"), xlab = "Carat", ylab = "Frequency")
+plot(hist25a, main = paste("Histogram of 1000 25% Samples"), xlab = "Carat", ylab = "Frequency")
+plot(hist50a, main = paste("Histogram of 1000 50% Samples"), xlab = "Carat", ylab = "Frequency")
+plot(hist80a, main = paste("Histogram of 1000 80% Samples"), xlab = "Carat", ylab = "Frequency")
+plot(hist100a, main = paste("Histogram of 100% Sample"), xlab = "Carat", ylab = "Frequency")
+
+
+#5. Calculate the min, max, mean and variance of each column from 3 and of the total dataset (the 100% sample). Append to the dataframe created in 1. Name the mean row ResampleMean and the others appropriately.
+
+smpl1b <- min(mydf[1])
+smpl10b <- min(mydf[2])
+smpl25b <- min(mydf[3])
+smpl50b <- min(mydf[4])
+smpl80b <- min(mydf[5])
+smpl100b <-min(diamonds$carat)
+
+smpl1c <- max(mydf[1])
+smpl10c <- max(mydf[2])
+smpl25c <- max(mydf[3])
+smpl50c <- max(mydf[4])
+smpl80c <- max(mydf[5])
+smpl100c <-max(diamonds$carat)
+
+smpl1d <- mean(smpl1v)
+smpl10d <- mean(smpl10v)
+smpl25d <- mean(smpl25v)
+smpl50d <- mean(smpl50v)
+smpl80d <- mean(smpl80v)
+smpl100d <-mean(diamonds$carat)
+
+smpl1e <- var(mydf[1])
+smpl10e <- var(mydf[2])
+smpl25e <- var(mydf[3])
+smpl50e <- var(mydf[4])
+smpl80e <- var(mydf[5])
+smpl100e <-var(diamonds$carat)
+
+
+data1q <- c(smpl1b, smpl1c, smpl1d, smpl1e)
+data10q <- c(smpl10b, smpl10c, smpl10d, smpl10e)
+data25q <- c(smpl25b, smpl25c, smpl25d, smpl25e)
+data50q <- c(smpl50b, smpl50c, smpl50d, smpl50e)
+data80q <- c(smpl80b, smpl80c, smpl80d, smpl80e)
+data100q <- c(smpl100b, smpl100c, smpl100d, smpl100e)
+
+
+mydf2 <- data.frame(data1q, data10q, data25q, data50q, data80q, data100q, row.names = c("Resample Min", "Resample Max", "Resample Mean", "Resample Variance"))
+
+mydf2 <- rename(mydf2, c("data1q"= "1% Sample", "data10q" = "10% Sample", "data25q"= "25% Sample", "data50q"= "50% Sample", "data80q"= "80% Sample", "data100q"= "100% Sample"))
+
+
+mydf3 <- rbind(mydf1, mydf2)
+
+#Make sure data-frame looks as it should
+mydf3
+
+
+#6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
+
+
+#create labels for the vertical lines we want
+mean_label1 = sprintf("SampleMean1perc", mean1)
+mean_label10 = sprintf("SampleMean10perc", mean10)
+mean_label25 = sprintf("SampleMean25perc", mean25)
+mean_label50 = sprintf("SampleMean50perc", mean50)
+mean_label80 = sprintf("SampleMean80perc", mean80)
+
+#Create the histogram
+diamondshist <- ggplot(diamonds, aes(x=diamonds$carat),
+                         environment = environment())
+      diamondshist <- diamondshist +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="carat") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=mean1, colour='red') +
+        annotate("text",x=mean1,y=0,label=mean_label1,hjust=.95)
+      
+    #add vertical line for 10%sample to histogram  
+    diamondshist <- diamondshist + geom_vline(xintercept=mean10,  colour='yellow') +
+        annotate("text",x=mean10,y=0,label=mean_label10,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     diamondshist <- diamondshist + geom_vline(xintercept=mean10,  colour='blue') +
+        annotate("text",x=mean25,y=0,label=mean_label25,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     diamondshist <- diamondshist + geom_vline(xintercept=mean50,  colour='black') +
+        annotate("text",x=mean50,y=0,label=mean_label50,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     diamondshist <- diamondshist + geom_vline(xintercept=mean80,  colour='green') +
+        annotate("text",x=mean80,y=0,label=mean_label80,vjust=-4, hjust=0)
+      print(diamondshist)
+     
+
+
+#7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
+
+#create labels for the vertical lines we want
+mean_label1r = sprintf("ResampleMean1perc", smpl1d)
+mean_label10r = sprintf("ResampleMean10perc", smpl10d)
+mean_label25r = sprintf("ResampleMean25perc", smpl25d)
+mean_label50r = sprintf("ResampleMean50perc", smpl50d)
+mean_label80r = sprintf("ResampleMean80perc", smpl80d)
+
+diamondshist1 <- ggplot(diamonds, aes(x=diamonds$carat),
+                         environment = environment())
+      diamondshist1 <- diamondshist1 +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="weight") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=smpl1d, colour='red') +
+        annotate("text",x=smpl1d,y=0,label=mean_label1r,hjust=-.05)
+      
+    #add vertical line for 10%sample to histogram  
+    diamondshist1 <- diamondshist1 + geom_vline(xintercept=smpl10d,  colour='yellow') +
+        annotate("text",x=smpl1d,y=0,label=mean_label10r,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     diamondshist1 <- diamondshist1 + geom_vline(xintercept=smpl25d,  colour='blue') +
+        annotate("text",x=smpl25d,y=0,label=mean_label25r,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     diamondshist1 <- diamondshist1 + geom_vline(xintercept=smpl50d,  colour='black') +
+        annotate("text",x=smpl50d,y=0,label=mean_label50r,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     diamondshist1 <- diamondshist1 + geom_vline(xintercept=smpl80d,  colour='green') +
+        annotate("text",x=smpl80d,y=0,label=mean_label80r,vjust=-4, hjust=-.05)
+      print(diamondshist1)
+      
+#Now we execute our code on faithful$eruptions
+#1.Take samples of 1%, 10%, 25%, 50%, 80%, and 100% of the data. Calculate the min, max, mean and variance.
+      
+#Take samples of sizes 1%, 10%, 25%, 50%, 80%, 100%
+smpl1 <- faithful[sample(nrow(faithful), 3),]
+smpl10 <- faithful[sample(nrow(faithful), 27),]
+smpl25 <- faithful[sample(nrow(faithful), 68),]
+smpl50 <- faithful[sample(nrow(faithful), 136),]
+smpl80 <- faithful[sample(nrow(faithful), 218),]
+smpl100 <- faithful[sample(nrow(faithful), 272),]
+
+#Calculate the min, max, mean, and variance of the eruptions for each sample
+
+#Calculate min at each sample size
+min1 <- min(smpl1[1])
+min10 <- min(smpl10[1])
+min25 <- min(smpl25[1])
+min50 <- min(smpl50[1])
+min80 <- min(smpl80[1])
+min100 <- min(smpl100[1])
+
+mins <- c(min1, min10, min25, min50, min80, min100)
+
+#Calculate max at each sample size
+max1 <- max(smpl1[1])
+max10 <- max(smpl10[1])
+max25 <- max(smpl25[1])
+max50 <- max(smpl50[1])
+max80 <- max(smpl80[1])
+max100 <- max(smpl100[1])
+
+maxs <- c(max1, max10, max25, max50, max80, max100)
+
+
+#Calculate mean at each sample size
+data1 <- smpl1$eruptions
+mean1 <- mean(data1)
+
+data10 <- smpl10$eruptions
+mean10 <- mean(data10)
+
+data25 <- smpl25$eruptions
+mean25 <- mean(data25)
+
+data50 <- smpl50$eruptions
+mean50 <- mean(data50)
+
+data80 <- smpl80$eruptions
+mean80 <- mean(data80)
+
+data100 <- smpl100$eruptions
+mean100 <- mean(data100)
+
+
+means <- c(mean1, mean10, mean25, mean50, mean80, mean100)
+
+#Calculate variance at each sample size
+
+var1 <- var(data1)
+
+var10 <- var(data10)
+
+var25 <- var(data25)
+
+var50 <- var(data50)
+
+var80 <- var(data80)
+
+var100 <- var(data100)
+
+vars <- c(var1, var10, var25, var50, var80, var100)
+
+#Group data from sample sizes together
+
+data1p <- c(min1, max1, mean1, var1)
+
+data10p <- c(min10, max10, mean10, var10)
+
+data25p <- c(min25, max25, mean25, var25)
+
+data50p <- c(min50, max50, mean50, var50)
+
+data80p <- c(min80, max80, mean80, var80)
+
+data100p <- c(min100, max100, mean100, var100)
+
+
+#Create data frame
+
+mydf1 <- data.frame(data1p, data10p, data25p, data50p, data80p, data100p, row.names = c("Sample Min", "Sample Max", "Sample Mean", "Sample Variance"))
+mydf1 <- rename(mydf1, c("data1p"= "1% Sample", "data10p" = "10% Sample", "data25p"= "25% Sample", "data50p"= "50% Sample", "data80p"= "80% Sample", "data100p"= "100% Sample"))
+
+#Make sure output is what we want
+mydf1
+
+
+#2. Create a grid of histograms that contains all sample sizes
+
+#First we create histograms of each sample size
+hist1 <- hist(smpl1$eruptions, main = paste("Histogram of 1% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist10 <- hist(smpl10$eruptions, main = paste("Histogram of 10% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist25 <- hist(smpl25$eruptions, main = paste("Histogram of 25% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist50 <- hist(smpl50$eruptions, main = paste("Histogram of 50% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist80 <- hist(smpl80$eruptions, main = paste("Histogram of 80% Sample"), xlab = "Weight", ylab = "Frequency")
+
+hist100 <- hist(smpl100$eruptions, main = paste("Histogram of 100% Sample"), xlab = "Weight", ylab = "Frequency")
+
+
+#Arrange the histograms we created into a grid using par function
+par(mfrow=c(2,3))
+plot(hist1, main = paste("Histogram of 1% Sample"), xlab = "Number of Eruptions", ylab = "Frequency" )
+plot(hist10, main = paste("Histogram of 10% Sample"), xlab = "Number of Eruptions", ylab = "Frequency" )
+plot(hist25, main = paste("Histogram of 25% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist50, main = paste("Histogram of 50% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist80, main = paste("Histogram of 80% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist100,  main = paste("Histogram of 100% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+
+
+#3 Take 1,000 samples at each of the sample sizes in 1 above (except the 100% sample!). Calculate a mean at each iteration and store the results in a dataframe.
+
+#first we need to create empty vectors with places for 1000 values
+smpl1v= c(rep(0, times=1000))
+smpl10v= c(rep(0, times=1000))
+smpl25v= c(rep(0, times=1000))
+smpl50v= c(rep(0, times=1000))
+smpl80v= c(rep(0, times=1000))
+
+
+#Takes 1000 samples at each sample size 
+for (i in 1:1000){
+randomSample = function(dataframe,n,replacement) {     
+  return (dataframe[sample(nrow(dataframe), n, replace=replacement),]) }
+  smpl1k <- randomSample(faithful, 42, FALSE)
+  smpl10k <- randomSample(faithful, 418, FALSE)
+  smpl25k <- randomSample(faithful, 1044, FALSE)
+  smpl50k <- randomSample(faithful, 2089, FALSE)
+  smpl80k <- randomSample(faithful, 3342, FALSE)
+
+smpl1mean= mean(smpl1k[,1])
+smpl1v[i]=smpl1mean
+
+smpl10mean= mean(smpl10k[,1])
+smpl10v[i]= smpl10mean
+
+smpl25mean= mean(smpl25k[,1])
+smpl25v[i]= smpl25mean
+
+smpl50mean= mean(smpl50k[,1])
+smpl50v[i]= smpl50mean
+
+smpl80mean= mean(smpl80k[,1])
+smpl80v[i]= smpl80mean
+
+}
+
+mydf= data.frame(cbind(smpl1v, smpl10v, smpl25v, smpl50v, smpl80v))
+
+#renaming the columns in the new data frame
+colnames(mydf) <- c("1% Sample", "10% Sample", "25% Sample", "50% Sample", "80% Sample")
+
+#Make sure dataframe looks as it should
+mydf
+
+
+#4. Create another grid of histograms that contains the four columns just created and include the 100% sample from 1.
+
+#First we will again create the histograms individually
+
+hist1a <- hist(smpl1v, main = paste("Histogram of 1000 1% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+hist10a <- hist(smpl10v, main = paste("Histogram of 1000 10% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+hist25a <- hist(smpl25v, main = paste("Histogram of 1000 25% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+hist50a <- hist(smpl50v, main = paste("Histogram of 1000 50% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+hist80a <- hist(smpl80v, main = paste("Histogram of 1000 80% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+hist100a <- hist(smpl100$weight.whole, main = paste("Histogram of 100% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+
+#Now we arrange the histograms into a grid using the par function
+
+par(mfrow=c(2,3))
+plot(hist1a, main = paste("Histogram of 1000 1% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist10a, main = paste("Histogram of 1000 10% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist25a, main = paste("Histogram of 1000 25% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist50a, main = paste("Histogram of 1000 50% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist80a, main = paste("Histogram of 1000 80% Samples"), xlab = "Number of Eruptions", ylab = "Frequency")
+plot(hist100a, main = paste("Histogram of 100% Sample"), xlab = "Number of Eruptions", ylab = "Frequency")
+
+
+#5. Calculate the min, max, mean and variance of each column from 3 and of the total dataset (the 100% sample). Append to the dataframe created in 1. Name the mean row ResampleMean and the others appropriately.
+
+smpl1b <- min(mydf[1])
+smpl10b <- min(mydf[2])
+smpl25b <- min(mydf[3])
+smpl50b <- min(mydf[4])
+smpl80b <- min(mydf[5])
+smpl100b <-min(faithful$eruptions)
+
+smpl1c <- max(mydf[1])
+smpl10c <- max(mydf[2])
+smpl25c <- max(mydf[3])
+smpl50c <- max(mydf[4])
+smpl80c <- max(mydf[5])
+smpl100c <-max(faithful$eruptions)
+
+smpl1d <- mean(smpl1v)
+smpl10d <- mean(smpl10v)
+smpl25d <- mean(smpl25v)
+smpl50d <- mean(smpl50v)
+smpl80d <- mean(smpl80v)
+smpl100d <-mean(faithful$eruptions)
+
+smpl1e <- var(mydf[1])
+smpl10e <- var(mydf[2])
+smpl25e <- var(mydf[3])
+smpl50e <- var(mydf[4])
+smpl80e <- var(mydf[5])
+smpl100e <-var(faithful$eruptions)
+
+
+data1q <- c(smpl1b, smpl1c, smpl1d, smpl1e)
+data10q <- c(smpl10b, smpl10c, smpl10d, smpl10e)
+data25q <- c(smpl25b, smpl25c, smpl25d, smpl25e)
+data50q <- c(smpl50b, smpl50c, smpl50d, smpl50e)
+data80q <- c(smpl80b, smpl80c, smpl80d, smpl80e)
+data100q <- c(smpl100b, smpl100c, smpl100d, smpl100e)
+
+
+mydf2 <- data.frame(data1q, data10q, data25q, data50q, data80q, data100q, row.names = c("Resample Min", "Resample Max", "Resample Mean", "Resample Variance"))
+
+mydf2 <- rename(mydf2, c("data1q"= "1% Sample", "data10q" = "10% Sample", "data25q"= "25% Sample", "data50q"= "50% Sample", "data80q"= "80% Sample", "data100q"= "100% Sample"))
+
+
+mydf3 <- rbind(mydf1, mydf2)
+
+#Make sure data-frame looks as it should
+mydf3
+
+
+#6. Create a single histogram of the 100% data and overlay and label lines that represent the 1%, 10%, 25%, 50%, and 80% SampleMean.
+
+
+#create labels for the vertical lines we want
+mean_label1 = sprintf("SampleMean1perc", mean1)
+mean_label10 = sprintf("SampleMean10perc", mean10)
+mean_label25 = sprintf("SampleMean25perc", mean25)
+mean_label50 = sprintf("SampleMean50perc", mean50)
+mean_label80 = sprintf("SampleMean80perc", mean80)
+
+#Create the histogram
+faithfulhist <- ggplot(faithful, aes(x=faithful$eruptions),
+                         environment = environment())
+      faithfulhist <- faithfulhist +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="Number of Eruptions") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=mean1, colour='red') +
+        annotate("text",x=mean1,y=0,label=mean_label1,hjust=.95)
+      
+    #add vertical line for 10%sample to histogram  
+    faithfulhist <- faithfulhist + geom_vline(xintercept=mean10,  colour='yellow') +
+        annotate("text",x=mean10,y=0,label=mean_label10,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     faithfulhist <- faithfulhist + geom_vline(xintercept=mean10,  colour='blue') +
+        annotate("text",x=mean25,y=0,label=mean_label25,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     faithfulhist <- faithfulhist + geom_vline(xintercept=mean50,  colour='black') +
+        annotate("text",x=mean50,y=0,label=mean_label50,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     faithfulhist <- faithfulhist + geom_vline(xintercept=mean80,  colour='green') +
+        annotate("text",x=mean80,y=0,label=mean_label80,vjust=-4, hjust=0)
+      print(faithfulhist)
+     
+##Sample sizes 10%, 25%, and 50% were all within .01 of one another so the colors overlap.
+
+
+#7. Create a second histogram of the 100% data and overlay and label vertical lines that represent the 1%, 10%, 25%, 50%, and 80% ResampleMean.
+
+#create labels for the vertical lines we want
+mean_label1r = sprintf("ResampleMean1perc", smpl1d)
+mean_label10r = sprintf("ResampleMean10perc", smpl10d)
+mean_label25r = sprintf("ResampleMean25perc", smpl25d)
+mean_label50r = sprintf("ResampleMean50perc", smpl50d)
+mean_label80r = sprintf("ResampleMean80perc", smpl80d)
+
+faithfulhist1 <- ggplot(faithful, aes(x=faithful$eruptions),
+                         environment = environment())
+      faithfulhist1 <- faithfulhist1 +
+        geom_histogram(colour = 'gray',
+                       fill = 'gray',
+                       binwidth=.05) +
+        labs(x="Number of Eruptions") +
+         #add vertical line for 1%sample to histogram  
+        geom_vline(xintercept=smpl1d, colour='red') +
+        annotate("text",x=smpl1d,y=0,label=mean_label1r,hjust=-.05)
+      
+    #add vertical line for 10%sample to histogram  
+   faithfulhist1 <- faithfulhist1 + geom_vline(xintercept=smpl10d,  colour='yellow') +
+        annotate("text",x=smpl1d,y=0,label=mean_label10r,vjust=-1, hjust=-.05)
+    
+     #add vertical line for 25%sample to histogram  
+     faithfulhist1 <- faithfulhist1 + geom_vline(xintercept=smpl25d,  colour='blue') +
+        annotate("text",x=smpl25d,y=0,label=mean_label25r,vjust=-2, hjust=-.05)
+     
+     #add vertical line for 50%sample to histogram  
+     faithfulhist1 <- faithfulhist1 + geom_vline(xintercept=smpl50d,  colour='black') +
+        annotate("text",x=smpl50d,y=0,label=mean_label50r,vjust=-3, hjust=-.05)
+     
+     #add vertical line for 80%sample to histogram  
+     faithfulhist1 <- faithfulhist1 + geom_vline(xintercept=smpl80d,  colour='green') +
+        annotate("text",x=smpl80d,y=0,label=mean_label80r,vjust=-4, hjust=-.05)
+      print(faithfulhist1)
+      
 
 #9.Provide a brief explanation of what you observe in the measures and histograms as it relates to sample size and resampling.
 
